@@ -334,7 +334,7 @@ matplot(x = seq(1:ncol(n_BMet_mat)), y = t(n_BMet_mat),
 # Sub-adult
 matplot(x = seq(1:ncol(n_BAdl_mat)), y = t(n_BAdl_mat),
         type = "l", xlab = "Species rank", ylab = "Abundance",
-        main = "Log-log rank-abundance \n Tadpole", lwd = 1, lty=1,
+        main = "Log-log rank-abundance \n Sub-adult", lwd = 1, lty=1,
         col=c(rep(line_cols[1], nrow(BAdl_T2)),
               rep(line_cols[2], nrow(BAdl_T1)),
               rep(line_cols[3], nrow(BAdl_Ctr))),
