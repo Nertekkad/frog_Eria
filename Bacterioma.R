@@ -1,5 +1,7 @@
 #### Data of frog's microbiota under different temperatures ####
 
+# Data of frog's microbiota under different temperatures
+
 setwd("~/Frog's data")
 # Data loading
 library(readxl)
@@ -9,7 +11,7 @@ bacterias<-read_excel("Bacterias.xlsx")
 # Identify frog´s life stages
 life_stage<-unique(meta_bacterias$Life_stage)
 
-##### Separation of data by life stages type #####
+# Separation of data by life stages type
 Tadpole<-meta_bacterias[which(meta_bacterias$Life_stage == life_stage[1]),]
 Metamorphic<-meta_bacterias[which(meta_bacterias$Life_stage == life_stage[2]),]
 Sub_adult<-meta_bacterias[which(meta_bacterias$Life_stage == life_stage[3]),]
@@ -53,9 +55,12 @@ t2<-which(colnames(bacterias)=="Species")
 tax_bacter<-as.data.frame(bacterias[,t1:t2])
 
 
+
 ##### Abundance tables' collapse #####
 
 library(mlBioNets)
+
+# Abundance tables' collapse
 
 # Tadpole under treatment 1
 BTad_T1<-T_collapse(F, T_table = tax_bacter, O_table = BaTad_T1, names_level = "Genus")
@@ -98,7 +103,7 @@ BAdl_T2<-BAdl_T2[, -which(colnames(BAdl_T2) == "uncultured")]
 BAdl_T2<-BAdl_T2[, -which(is.na(colnames(BAdl_T2)))]
 
 # Sub-adult control
-BAdl_Ctr<-T_collapse(F, T_table = tax_bacter, O_table = BaAdl_T2, names_level = "Genus")
+BAdl_Ctr<-T_collapse(F, T_table = tax_bacter, O_table = BaAdl_Ctr, names_level = "Genus")
 BAdl_Ctr<-BAdl_Ctr[, -which(colnames(BAdl_Ctr) == "uncultured")]
 BAdl_Ctr<-BAdl_Ctr[, -which(is.na(colnames(BAdl_Ctr)))]
 
@@ -145,7 +150,7 @@ ml_BMet <- v_colored_ml(ml_BMet, tax_bacter, g_tax = "Phylum",
 ml_BAdl <- v_colored_ml(ml_BAdl, tax_bacter, g_tax = "Phylum",
                         p_tax = "Genus", g_colors = colors)
 
-plot(BTad_T1Net, vertex.label.color="black",
+plot(ml_BTad[[1]], vertex.label.color="black",
      vertex.color = vertex.attributes(BTad_T1Net)$color, vertex.label.cex=.5,
      vertex.label.dist=1,layout=layout_with_kk, vertex.size = 5,
      main = "Tadpole under treatment 1")
@@ -212,7 +217,7 @@ for(i in 1:nrow(n_BTad_mat)){
 }
 n_BTad_mat<-matrix(unlist(sorted_abs), nrow=length(sorted_abs),
                    ncol=length(sorted_abs[[1]]), byrow=TRUE)
-n_BTad_mat<-n_BTad_mat[,-which(colSums(n_BTad_mat)==0)]
+#n_BTad_mat<-n_BTad_mat[,-which(colSums(n_BTad_mat)==0)]
 
 # Plot the axis
 plot(1e10,xlim = c(1,30),ylim = c(0,0.4),
@@ -342,15 +347,16 @@ matplot(x = seq(1:ncol(n_BAdl_mat)), y = t(n_BAdl_mat),
 
 
 ##### MSD analysis #####
+# MSD analysis
 
 # Tadpole
 d <- dist(x = BTad_mat,method = "manhattan")
 mds <- cmdscale(d = d,k = 5,eig = TRUE)
 plot(mds$points,xlab = "First coordinate",ylab = "Second coordinate",pch = 19,
      cex =1,col = line_cols[sample_classes],
-     main = "MDS plot with representative points \n of each group and error bars")
-sample_classes <- c(rep(1, length(T2_s)),rep(2, length(T1_s)),
-                    rep(3, length(TC_s)))
+     main = "MDS analysis \n Tadpole")
+sample_classes <- c(rep(1, nrow(BTad_T2)),rep(2, nrow(BTad_T1)),
+                    rep(3, nrow(BTad_Ctr)))
 a <- representative_point(input = mds$points,ids = which(sample_classes == 1),
                           col = scales::alpha(line_cols[1],0.5),
                           plot = TRUE,standard_error_mean = TRUE,pch = 19, cex = 4)
@@ -360,17 +366,17 @@ a <- representative_point(input = mds$points,ids = which(sample_classes == 2),
 a <- representative_point(input = mds$points,ids = which(sample_classes == 3),
                           col = scales::alpha(line_cols[3],0.5),
                           plot = TRUE,standard_error_mean = TRUE,pch = 19, cex = 4)
-legend("bottomright",bty = "n",legend = c("Treatment 2","Treatment 1","Control"),
+legend("topleft",bty = "n",legend = c("Treatment 2","Treatment 1","Control"),
        col = line_cols,pch = 19)
 
 # Metamorphic
-d <- dist(x = n_BMet_mat,method = "manhattan")
+d <- dist(x = BMet_mat,method = "manhattan")
 mds <- cmdscale(d = d,k = 5,eig = TRUE)
-sample_classes <- c(rep(1, length(M2_s)),rep(2, length(M1_s)),
-                    rep(3, length(MC_s)))
+sample_classes <- c(rep(1, nrow(BMet_T2)),rep(2, nrow(BMet_T2)),
+                    rep(3, nrow(BMet_Ctr)))
 plot(mds$points,xlab = "First coordinate",ylab = "Second coordinate",pch = 19,
      cex =1,col = line_cols[sample_classes],
-     main = "MDS analysis \n ")
+     main = "MDS analysis \n Metamorphic")
 a <- representative_point(input = mds$points,ids = which(sample_classes == 1),
                           col = scales::alpha(line_cols[1],0.5),
                           plot = TRUE,standard_error_mean = TRUE,pch = 19, cex = 4)
@@ -380,14 +386,14 @@ a <- representative_point(input = mds$points,ids = which(sample_classes == 2),
 a <- representative_point(input = mds$points,ids = which(sample_classes == 3),
                           col = scales::alpha(line_cols[3],0.5),
                           plot = TRUE,standard_error_mean = TRUE,pch = 19, cex = 4)
-legend("bottomright",bty = "n",legend = c("Treatment 2","Treatment 1","Control"),
+legend("topleft",bty = "n",legend = c("Treatment 2","Treatment 1","Control"),
        col = line_cols,pch = 19)
 
 # Sub-adults
-d <- dist(x = n_BAdl_mat,method = "manhattan")
+d <- dist(x = BAdl_mat,method = "manhattan")
 mds <- cmdscale(d = d,k = 5,eig = TRUE)
-sample_classes <- c(rep(1, length(A2_s)),rep(2, length(A1_s)),
-                    rep(3, length(AC_s)))
+sample_classes <- c(rep(1, nrow(BAdl_T2)),rep(2, nrow(BAdl_T1)),
+                    rep(3, nrow(BAdl_Ctr)))
 plot(mds$points,xlab = "First coordinate",ylab = "Second coordinate",pch = 19,
      cex =1,col = line_cols[sample_classes],
      main = "MDS analysis \n Sub-adults")
@@ -400,44 +406,99 @@ a <- representative_point(input = mds$points,ids = which(sample_classes == 2),
 a <- representative_point(input = mds$points,ids = which(sample_classes == 3),
                           col = scales::alpha(line_cols[3],0.5),
                           plot = TRUE,standard_error_mean = TRUE,pch = 19, cex = 4)
-legend("bottomright",bty = "n",legend = c("Treatment 2","Treatment 1","Control"),
+legend("topleft",bty = "n",legend = c("Treatment 2","Treatment 1","Control"),
        col = line_cols,pch = 19)
 
-#### Centrality analysis ####
-ml_BTad <- ctr_ml(ml_BTad, "degree")
-ml_BMet <- ctr_ml(ml_BMet, "degree")
-ml_BAdl <- ctr_ml(ml_BAdl, "degree")
+
+
+ml_TaxGroup <- function(g.list, T_table, g_tax, p_tax){
+  gtax<-list()
+  for(i in 1:length(g.list)){
+    gtax[[i]] <- TaxGroup(g.list[[i]], T_table, g_tax, p_tax)
+  }
+  return(gtax)
+}
+
+
+ml_BTad <- ml_TaxGroup(ml_BTad, tax_bacter, "Phylum", "Genus")
+
+ctr_df <- function(g.list, layer_names){
+  degree_ml <- list()
+  for(i in 1:length(g.list)){
+    degree_ml[[i]] <- degree(g.list[[i]])
+  }
+  degree_df1 <- as.data.frame(matrix(unlist(degree_ml), 
+                                     nrow = length(degree_ml[[1]]), 
+                                     ncol = length(degree_ml)))
+  colnames(degree_df1) <- layer_names
+  degree_df2 <- data.frame(p_tax = vertex.attributes(g.list[[1]])$name,
+                           g_tax = vertex.attributes(g.list[[1]])$Taxon)
+  ctr_df <- cbind(degree_df1,degree_df2)
+  return(ctr_df)
+}
+
+BTad_degree <- ctr_df(ml_BTad, c("Treatment 2", "Treatment 1", "Control"))
 
 
 
+phyl_ctr_df <- function(ctr_df, layer_names, n_layers){
+  phyla<-unique(BTad_degree$g_tax)
+  ml_phyl_d <- list()
+  for(j in 1:n_layers){
+    phyl_d<-c()
+    for(i in 1:length(phyla)){
+      phyl_d[i] <- sum(BTad_degree[, j][which(BTad_degree$g_tax %in% phyla[i])])
+    }
+    ml_phyl_d[[j]] <- phyl_d
+  }
+  degree_df1 <- as.data.frame(matrix(unlist(ml_phyl_d), 
+                                     nrow = length(ml_phyl_d[[1]]), 
+                                     ncol = length(ml_phyl_d)))
+  colnames(degree_df1) <- layer_names
+  
+  degree_df2<-data.frame(
+    Taxon=phyla,
+    Colors=colors
+  )
+  not_degree <- which(rowSums(degree_df1) == 0)
+  ctr_df <- cbind(degree_df1,degree_df2)
+  ctr_df <- ctr_df[-not_degree,]
+  return(ctr_df)
+}
 
-degree_df <- data.frame(Species = vertex.attributes(BTad_CtrNet)$name,
-                        color = vertex.attributes(BTad_CtrNet)$color,
-                        Phylum = vertex.attributes(BTad_CtrNet)$Taxon,
-                        Ctr_degree = degree(BTad_CtrNet),
-                        T1_degree = degree(BTad_T1Net),
-                        T2_degree = degree(BTad_T2Net))
+BTad_phyl_degree <- phyl_ctr_df(BTad_degree, c("Treatment 2", "Treatment 1", "Control"), n_layers = 3)
 
-degree_df<-degree_df[-which(rowSums(degree_df[,c(4,5,6)])/
-                              mean(rowSums(degree_df[,c(4,5,6)]))<0.9),]
 
-library(gridExtra)
-p1<-ggplot(data=degree_df, aes(x=Species, y=Ctr_degree, fill=Phylum)) +
-  geom_bar(stat="identity")
-p2<-ggplot(data=degree_df, aes(x=Species, y=T1_degree, fill=Phylum)) +
-  geom_bar(stat="identity")
-p3<-ggplot(data=degree_df, aes(x=Species, y=T2_degree, fill=Phylum)) +
-  geom_bar(stat="identity")
 
-grid.arrange(p1 + coord_flip() +
-               theme(axis.text.y = element_text(size = 0.01),
-                     legend.position = "none") + ylab("Control"),
-             p2 + coord_flip() +
-               theme(axis.text.y = element_text(size = 0.01),
-                     legend.position = "none") + ylab("Treatment 1"),
-             p3 + coord_flip() +
-               theme(axis.text.y = element_text(size = 0.01),
-                     legend.text = element_text(size = 6),
-                     legend.position="bottom", legend.box = "horizontal") +
-               ylab("Treatment 2"),
-             ncol=3)
+ggplot(holis, aes(x = reorder(BTad_phyl_degree$Taxon, -BTad_phyl_degree$`Treatment 2`),
+                             y = BTad_phyl_degree$`Treatment 2`, fill = Colors)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Phyla importance by degree \n Control") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Networks' connectivity analysis
+
+# Phylum degree importance
+
+# Control
+phyla<-unique(degree_df$Phylum)
+
+phyl_d<-c()
+for(i in 1:length(phyla)){
+  phyl_d[i]<-sum(degree_df$Ctr_degree[which(degree_df$Phylum %in% phyla[i])])
+}
+
+degree_phylaCtrl<-data.frame(
+  Phylum=phyla,
+  Degree=phyl_d
+)
+
+degree_phylaCtrl<-degree_phylaCtrl[-which(degree_phylaCtrl$Degree == 0),]
+
+ggplot(degree_phylaCtrl, aes(x = reorder(Phylum, -Degree), y = Degree)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Phyla importance by degree \n Control") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
