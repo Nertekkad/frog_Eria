@@ -1,4 +1,4 @@
-#### Data of frog's microbiota under different temperatures ####
+#### Data of frog's bacteriome under different temperatures ####
 
 # Data of frog's microbiota under different temperatures
 
@@ -64,47 +64,47 @@ library(mlBioNets)
 
 # Tadpole under treatment 1
 BTad_T1<-T_collapse(F, T_table = tax_bacter, O_table = BaTad_T1, names_level = "Genus")
-BTad_T1<-BTad_T1[, -which(colnames(BTad_T1) == "uncultured")]
+BTad_T1<-BTad_T1[, -which(colnames(BTad_T1) == "unidentified")]
 BTad_T1<-BTad_T1[, -which(is.na(colnames(BTad_T1)))]
 
 # Tadpole under treatment 2
 BTad_T2<-T_collapse(F, T_table = tax_bacter, O_table = BaTad_T2, names_level = "Genus")
-BTad_T2<-BTad_T2[, -which(colnames(BTad_T2) == "uncultured")]
+BTad_T2<-BTad_T2[, -which(colnames(BTad_T2) == "unidentified")]
 BTad_T2<-BTad_T2[, -which(is.na(colnames(BTad_T2)))]
 
 # Tadpole control
 BTad_Ctr<-T_collapse(F, T_table = tax_bacter, O_table = BaTad_Ctr, names_level = "Genus")
-BTad_Ctr<-BTad_Ctr[, -which(colnames(BTad_Ctr) == "uncultured")]
+BTad_Ctr<-BTad_Ctr[, -which(colnames(BTad_Ctr) == "unidentified")]
 BTad_Ctr<-BTad_Ctr[, -which(is.na(colnames(BTad_Ctr)))]
 
 # Metamorphic under treatment 1
 BMet_T1<-T_collapse(F, T_table = tax_bacter, O_table = BaMet_T1, names_level = "Genus")
-BMet_T1<-BMet_T1[, -which(colnames(BMet_T1) == "uncultured")]
+BMet_T1<-BMet_T1[, -which(colnames(BMet_T1) == "unidentified")]
 BMet_T1<-BMet_T1[, -which(is.na(colnames(BMet_T1)))]
 
 # Metamorphic under treatment 2
 BMet_T2<-T_collapse(F, T_table = tax_bacter, O_table = BaMet_T2, names_level = "Genus")
-BMet_T2<-BMet_T2[, -which(colnames(BMet_T2) == "uncultured")]
+BMet_T2<-BMet_T2[, -which(colnames(BMet_T2) == "unidentified")]
 BMet_T2<-BMet_T2[, -which(is.na(colnames(BMet_T2)))]
 
 # Metamorphic control
 BMet_Ctr<-T_collapse(F, T_table = tax_bacter, O_table = BaMet_Ctr, names_level = "Genus")
-BMet_Ctr<-BMet_Ctr[, -which(colnames(BMet_Ctr) == "uncultured")]
+BMet_Ctr<-BMet_Ctr[, -which(colnames(BMet_Ctr) == "unidentified")]
 BMet_Ctr<-BMet_Ctr[, -which(is.na(colnames(BMet_Ctr)))]
 
 # Sub-adult under treatment 1
 BAdl_T1<-T_collapse(F, T_table = tax_bacter, O_table = BaAdl_T1, names_level = "Genus")
-BAdl_T1<-BAdl_T1[, -which(colnames(BAdl_T1) == "uncultured")]
+BAdl_T1<-BAdl_T1[, -which(colnames(BAdl_T1) == "unidentified")]
 BAdl_T1<-BAdl_T1[, -which(is.na(colnames(BAdl_T1)))]
 
 # Sub-adult under treatment 2
 BAdl_T2<-T_collapse(F, T_table = tax_bacter, O_table = BaAdl_T2, names_level = "Genus")
-BAdl_T2<-BAdl_T2[, -which(colnames(BAdl_T2) == "uncultured")]
+BAdl_T2<-BAdl_T2[, -which(colnames(BAdl_T2) == "unidentified")]
 BAdl_T2<-BAdl_T2[, -which(is.na(colnames(BAdl_T2)))]
 
 # Sub-adult control
 BAdl_Ctr<-T_collapse(F, T_table = tax_bacter, O_table = BaAdl_Ctr, names_level = "Genus")
-BAdl_Ctr<-BAdl_Ctr[, -which(colnames(BAdl_Ctr) == "uncultured")]
+BAdl_Ctr<-BAdl_Ctr[, -which(colnames(BAdl_Ctr) == "unidentified")]
 BAdl_Ctr<-BAdl_Ctr[, -which(is.na(colnames(BAdl_Ctr)))]
 
 
@@ -129,7 +129,7 @@ BAdl_CtrNet<-net_inference(BAdl_Ctr, "aracne")
 #### Multilayer networks ####
 
 unq<-unique(tax_bacter[,"Phylum"])
-unq<-unq[-c(which(unq == "uncultured"), which(is.na(unq)))]
+unq<-unq[-c(which(unq == "unidentified"), which(is.na(unq)))]
 colors <- sample(rainbow(100), length(unq))
 
 # Life stages
@@ -154,7 +154,7 @@ plot(ml_BTad[[1]], vertex.label.color="black",
      vertex.color = vertex.attributes(BTad_T1Net)$color, vertex.label.cex=.5,
      vertex.label.dist=1,layout=layout_with_kk, vertex.size = 5,
      main = "Tadpole under treatment 1")
-legend(x=-2.4, y=0.7, unq, title = "Insect", pch=21, pt.bg=colors, pt.cex=1.3, cex=.8, bty="n", ncol=1)
+legend(x=-2.4, y=0.7, unq, title = "Bacteriome", pch=21, pt.bg=colors, pt.cex=1.3, cex=.8, bty="n", ncol=1)
 
 
 library(muxViz)
@@ -422,6 +422,8 @@ BAdl_degree <- ctr_df(ml_BAdl, c("Treatment 2", "Treatment 1", "Control"))
 BTad_phyl_degree <- phyl_ctr_df(BTad_degree, c("Treatment 2", "Treatment 1", "Control"),
                                 n_layers = 3)
 BMet_phyl_degree <- phyl_ctr_df(BMet_degree, c("Treatment 2", "Treatment 1", "Control"),
+                                n_layers = 3)
+BAdl_phyl_degree <- phyl_ctr_df(BAdl_degree, c("Treatment 2", "Treatment 1", "Control"),
                                 n_layers = 3)
 
 
