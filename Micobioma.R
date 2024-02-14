@@ -169,7 +169,7 @@ plot_multiplex3D(ml_FMet, layer.layout=lay,
                  layer.shift.x=0.5, layer.space=2,
                  layer.labels=NULL, layer.labels.cex=1.5,
                  node.size.values="auto",
-                 node.size.scale=abs_mat(abs_FMet, ml_FMet, 2),
+                 node.size.scale=abs_mat(abs_FMet, ml_FMet, 10),
                  node.colors=node_color_mat(ml_FMet, "phylo"),
                  edge.colors="#838B8B",
                  node.colors.aggr=NULL,
@@ -181,7 +181,7 @@ plot_multiplex3D(ml_FAdl, layer.layout=lay,
                  layer.shift.x=0.5, layer.space=2,
                  layer.labels=NULL, layer.labels.cex=1.5,
                  node.size.values="auto",
-                 node.size.scale=abs_mat(abs_FAdl, ml_FAdl, 2),
+                 node.size.scale=abs_mat(abs_FAdl, ml_FAdl, 10),
                  node.colors=node_color_mat(ml_FAdl, "phylo"),
                  edge.colors="#838B8B",
                  node.colors.aggr=NULL,
@@ -417,7 +417,171 @@ FAdl_phyl_degree <- phyl_ctr_df(FAdl_degree, c("Treatment 2", "Treatment 1", "Co
                                 n_layers = 3)
 
 
+library(ggplot2)
+ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 2`),
+                             y = FTad_phyl_degree$`Treatment 2`, fill = Colors)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Phyla importance by degree \n Treatment 2") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 1`),
+                             y = FTad_phyl_degree$`Treatment 1`, fill = Colors)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Phyla importance by degree \n Treatment 1") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Control`),
+                             y = FTad_phyl_degree$`Control`, fill = Colors)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Phyla importance by degree \n Control") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+##### Centrality log-fold change #####
+
+
+log2fc <- -log2((FTad_phyl_degree$Control+1)/(FTad_phyl_degree$`Treatment 1`+1))
+zscore <- (log2fc-mean(log2fc))/sd(log2fc)
+df_degree <- data.frame(
+  Phylum = FTad_phyl_degree$Taxon,
+  log2fc = log2fc,
+  z_score = zscore
+)
+
+library(ggpubr)
+
+ggbarplot(df_degree, x = "Phylum", y = "z_score",
+          fill = "Phylum",
+          color = "white",
+          palette = colors,
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 90,
+          ylab = "z_score",
+          rotate = TRUE,
+          ggtheme = theme_minimal()) +
+  theme(legend.position = "none")
+
+ggbarplot(df_degree, x = "Phylum", y = "log2fc",
+          fill = "Phylum",
+          color = "white",
+          palette = colors,
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 90,
+          ylab = "log2fc",
+          rotate = TRUE,
+          ggtheme = theme_minimal()) +
+  theme(legend.position = "none")
 
 
 
+# Transform the data into a phyloseq object
+tax_fungi<-as.matrix(hongos[,t1:t2])
+otus_fungi<-as.matrix(hongos[,-(t1:t2)])
+otus_fungi<-otus_fungi[,-1]
+# OTUs IDs as row names and sample IDs as column names
+ID_otus <- hongos$id
+otus_fungi<-otus_fungi[,-1]
+samples_fungi<-colnames(otus_fungi)
+otus_fungi<-matrix(as.numeric(otus_fungi),
+                   ncol = length(samples_fungi),
+                   nrow = length(ID_otus))
+colnames(otus_fungi)<-samples_fungi
+rownames(otus_fungi)<-ID_otus
+# OTUs IDs as row names in the taxa table
+rownames(tax_fungi)<-ID_otus
+# Phyloseq objects
+otus_fungi<-otu_table(otus_fungi, taxa_are_rows = TRUE)
+tax_fungi<-tax_table(tax_fungi)
+physeq = phyloseq(otus_fungi, tax_fungi)
+# Sample metadata
+rownames(meta_hongos)<-meta_hongos[,1]
+meta_hongos<-meta_hongos[,-1]
+sample_data<-sample_data(meta_hongos)
+# Merge of phyloseq objects
+physeq2<-merge_phyloseq(physeq, sample_data)
+
+# Dysbiosis analysis
+
+# Bray-Curtis distance matrix
+dist.mat <- phyloseq::distance(physeq2, "bray")
+# Get reference samples
+ref.samples <- sample_names(subset_samples(physeq2, 
+                                           Treatment == "Control"))
+# Community level variation analysis
+dysbiosis_1 <- dysbiosisMedianCLV(physeq2,
+                                  dist_mat = dist.mat,
+                                  reference_samples = ref.samples)
+# We sample the data set identifying as dysbiotic the data under the 90th percentile
+dysbiosis_thres <- quantile(subset(dysbiosis_1, Treatment == "Treatment2")$score, 0.9)
+normobiosis_thres <- quantile(subset(dysbiosis_1, Treatment == "Treatment2")$score, 0.1)
+
+dysbiosis_1 <- dysbiosis_1 |> 
+  mutate(isDysbiostic = ifelse(score >= dysbiosis_thres, TRUE, FALSE))
+
+# Dysbiosis plot measures according to CLV method
+p1 <- plotDysbiosis(df=dysbiosis_1,
+                    xvar="Treatment",
+                    yvar="score",
+                    colors=c(Treatment1="orange", Treatment2="red",
+                             Control="green"),
+                    show_points = FALSE) +
+  labs(x="", y="Dysbiosis Score") +
+  theme_bw(base_size = 14)
+p1
+
+# Dysbiosis plot measures according to euclidean method
+dysbiosis_2 <- euclideanDistCentroids(physeq2,
+                                      dist_mat = dist.mat,
+                                      use_squared = TRUE,
+                                      group_col = "Treatment",
+                                      control_label = "Control",
+                                      case_label = "Treatment2")
+
+p2 <- plotDysbiosis(df=dysbiosis_2,
+                    xvar="Treatment",
+                    yvar="CentroidDist_score",
+                    colors=c(Treatment1="orange", Treatment2="red",
+                             Control="green"),
+                    show_points = FALSE) +
+  labs(x="", y="Dysbiosis Score (Centroid)") +
+  theme_bw(base_size = 14)
+p2
+
+
+# Dysbiosis plot measures according to the Combined alpha-beta diversity based score
+dysbiosis_3 <- combinedShannonJSD(physeq2,
+                                  reference_samples = ref.samples)
+
+
+p3 <- plotDysbiosis(df=dysbiosis_3,
+                    xvar="Treatment",
+                    yvar="ShannonJSDScore",
+                    colors=c(Treatment1="orange", Treatment2="red",
+                             Control="green"),
+                    show_points = FALSE)+
+  labs(x="", y="Shannon-JSD\nDysbiosis Score") +
+  theme_bw(base_size = 14)
+p3
+
+
+cloud.results <- cloudStatistic(physeq2,
+                                dist_mat = dist.mat,
+                                reference_samples = ref.samples,
+                                ndim=-1,
+                                k_num=5)
+
+p4 <- plotDysbiosis(df=cloud.results,
+                    xvar="Treatment",
+                    yvar="log2Stats",
+                    colors=c(Treatment1="orange", Treatment2="red",
+                             Control="green"),
+                    show_points = FALSE) +
+  labs(x="", y="Dysbiosis CLOUD Score")
+p4
 
