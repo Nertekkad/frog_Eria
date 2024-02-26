@@ -451,9 +451,146 @@ ggplot(BTad_phyl_degree, aes(x = reorder(BTad_phyl_degree$Taxon, -BTad_phyl_degr
   xlab("Phylum") + ylab("Degree") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+##### Multiplex centrality #####
+
+###### Degree ######
+
+ml_BTad_degree <- ctr_ml(ml_BTad, "degree")
+ml_BMet_degree <- ctr_ml(ml_BMet, "degree")
+ml_BAdl_degree <- ctr_ml(ml_BAdl, "degree")
+
+# Tadpole
+lay <- layoutMultiplex(ml_BTad_degree, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BTad_degree, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BTad, ml_BTad_degree, 2),
+                 node.colors=node_color_mat(ml_BTad_degree, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+# Metamorphic
+lay <- layoutMultiplex(ml_BMet_degree, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BMet_degree, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BMet, ml_BMet_degree, 2),
+                 node.colors=node_color_mat(ml_BMet_degree, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+# Sub-adult
+lay <- layoutMultiplex(ml_BAdl_degree, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BAdl_degree, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BAdl, ml_BAdl_degree, 2),
+                 node.colors=node_color_mat(ml_BAdl_degree, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+###### Betweenness ######
+
+ml_BTad_bet <- ctr_ml(ml_BTad, "betweenness")
+ml_BMet_bet <- ctr_ml(ml_BMet, "betweenness")
+ml_BAdl_bet <- ctr_ml(ml_BAdl, "betweenness")
+
+# Tadpole
+lay <- layoutMultiplex(ml_BTad_bet, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BTad_bet, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BTad, ml_BTad_bet, 2),
+                 node.colors=node_color_mat(ml_BTad_bet, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+# Metamorphic
+lay <- layoutMultiplex(ml_BMet_bet, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BMet_bet, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BMet, ml_BMet_bet, 2),
+                 node.colors=node_color_mat(ml_BMet_bet, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+# Sub-adult
+lay <- layoutMultiplex(ml_BAdl_bet, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BAdl_bet, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BAdl, ml_BAdl_bet, 2),
+                 node.colors=node_color_mat(ml_BAdl_bet, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+###### Closeness ######
+
+ml_BTad_cl <- ctr_ml(ml_BTad, "closeness")
+ml_BMet_cl <- ctr_ml(ml_BMet, "closeness")
+ml_BAdl_cl <- ctr_ml(ml_BAdl, "closeness")
+
+# Tadpole
+lay <- layoutMultiplex(ml_BTad_cl, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BTad_bet, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BTad, ml_BTad_cl, 2),
+                 node.colors=node_color_mat(ml_BTad_cl, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+# Metamorphic
+lay <- layoutMultiplex(ml_BMet_bet, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BMet_bet, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BMet, ml_BMet_bet, 2),
+                 node.colors=node_color_mat(ml_BMet_bet, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+# Sub-adult
+lay <- layoutMultiplex(ml_BAdl_bet, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BAdl_bet, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BAdl, ml_BAdl_bet, 2),
+                 node.colors=node_color_mat(ml_BAdl_bet, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
 
 ##### Centrality log-fold change #####
 
+##### Treatment 1 logFC #####
 
 log2fc <- -log2((BTad_phyl_degree$Control+1)/(BTad_phyl_degree$`Treatment 1`+1))
 zscore <- (log2fc-mean(log2fc))/sd(log2fc)
@@ -464,11 +601,12 @@ df_degree <- data.frame(
 )
 
 library(ggpubr)
+library(viridis)
 
 ggbarplot(df_degree, x = "Phylum", y = "z_score",
           fill = "Phylum",
           color = "white",
-          palette = colors,
+          palette = sample(viridis(100), nrow(df_degree)),
           sort.val = "desc",
           sort.by.groups = FALSE,
           x.text.angle = 90,
@@ -480,7 +618,7 @@ ggbarplot(df_degree, x = "Phylum", y = "z_score",
 ggbarplot(df_degree, x = "Phylum", y = "log2fc",
           fill = "Phylum",
           color = "white",
-          palette = colors,
+          palette = sample(viridis(100), nrow(df_degree)),
           sort.val = "desc",
           sort.by.groups = FALSE,
           x.text.angle = 90,
@@ -488,6 +626,98 @@ ggbarplot(df_degree, x = "Phylum", y = "log2fc",
           rotate = TRUE,
           ggtheme = theme_minimal()) +
   theme(legend.position = "none")
+
+##### Treatment 2 logFC #####
+
+log2fc <- -log2((BTad_phyl_degree$Control+1)/(BTad_phyl_degree$`Treatment 2`+1))
+zscore <- (log2fc-mean(log2fc))/sd(log2fc)
+df_degree <- data.frame(
+  Phylum = BTad_phyl_degree$Taxon,
+  log2fc = log2fc,
+  z_score = zscore
+)
+
+library(ggpubr)
+library(viridis)
+
+ggbarplot(df_degree, x = "Phylum", y = "z_score",
+          fill = "Phylum",
+          color = "white",
+          palette = sample(viridis(100), nrow(df_degree)),
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 90,
+          ylab = "z_score",
+          rotate = TRUE,
+          ggtheme = theme_minimal()) +
+  theme(legend.position = "none")
+
+ggbarplot(df_degree, x = "Phylum", y = "log2fc",
+          fill = "Phylum",
+          color = "white",
+          palette = sample(viridis(100), nrow(df_degree)),
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 90,
+          ylab = "log2fc",
+          rotate = TRUE,
+          ggtheme = theme_minimal()) +
+  theme(legend.position = "none")
+
+#### Abundance log-fold change ####
+
+abundance_plot <- function(T_table, O_table, names_level, title){
+  # Table collapse
+  Phyl_abs<-T_collapse(F, T_table = T_table, O_table = O_table, names_level = names_level)
+  # Abundance data.frame
+  df_abphy <- data.frame(
+    Phylum = unique(tax_bacter[,names_level]),
+    Abs = colSums(Phyl_abs)/colSums(Phyl_abs)[which.max(colSums(Phyl_abs))]
+  )
+  # Delete absent taxa
+  df_abphy <- df_abphy[-which(df_abphy$Abs == 0),]
+  # Plot
+  p <- ggplot(df_abphy, aes(x = reorder(df_abphy$Phylum, -df_abphy$Abs),
+                            y = df_abphy$Abs, fill = Phylum)) +
+    geom_bar(stat = "identity") +
+    labs(title = title) +
+    xlab("Phylum") + ylab("Abundance") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  return(p)
+}
+
+abundance_plot(T_table = tax_bacter, O_table = BaTad_T2, names_level = "Phylum",
+               title = "Treatment 2")
+
+abundance_plot(T_table = tax_bacter, O_table = BaTad_T1, names_level = "Phylum",
+               title = "Treatment 1")
+
+abundance_plot(T_table = tax_bacter, O_table = BaTad_Ctr, names_level = "Phylum",
+               title = "Control")
+
+
+
+
+# Table collapse
+Phyl_abs<-T_collapse(F, T_table = T_table, O_table = O_table, names_level = names_level)
+# Abundance data.frame
+df_abphy <- data.frame(
+  Phylum = unique(tax_bacter[,names_level]),
+  Abs = colSums(Phyl_abs)/colSums(Phyl_abs)[which.max(colSums(Phyl_abs))]
+)
+# Delete absent taxa
+df_abphy <- df_abphy[-which(df_abphy$Abs == 0),]
+log2fc <- -log2((BTad_phyl_degree$Control+1)/(BTad_phyl_degree$`Treatment 2`+1))
+zscore <- (log2fc-mean(log2fc))/sd(log2fc)
+df_degree <- data.frame(
+  Phylum = BTad_phyl_degree$Taxon,
+  log2fc = log2fc,
+  z_score = zscore
+)
+
+
+
+
 
 
 
@@ -589,7 +819,9 @@ p3 <- plotDysbiosis(df=dysbiosis_3,
   theme_bw(base_size = 14)
 p3
 
-
+# Test for outliers’ detection that accounts for the wide range of
+# microbiome phenotypes observed in a typical set of healthy individuals
+# and for intra-individual temporal variation.
 cloud.results <- cloudStatistic(physeq2,
                                 dist_mat = dist.mat,
                                 reference_samples = ref.samples,
@@ -602,9 +834,62 @@ p4 <- plotDysbiosis(df=cloud.results,
                     colors=c(Treatment1="orange", Treatment2="red",
                              Control="green"),
                     show_points = FALSE) +
-  labs(x="", y="Dysbiosis CLOUD Score")
+  labs(x="", y="Dysbiosis CLOUD Score") +
+  theme_bw(base_size = 14)
 p4
 
 
 
+T2<-degree(BTad_T2Net)[-which(degree(BTad_T2Net)==0)]
+T1<-degree(BTad_T1Net)[-which(degree(BTad_T1Net)==0)]
+Ctr<-degree(BTad_CtrNet)[-which(degree(BTad_CtrNet)==0)]
 
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
+                rep("Control", length(Ctr))),
+  Data = c(T2, T1, Ctr)
+)
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Tadpole"
+)
+
+T2<-degree(BMet_T2Net)[-which(degree(BMet_T2Net)==0)]
+T1<-degree(BMet_T1Net)[-which(degree(BMet_T1Net)==0)]
+Ctr<-degree(BMet_CtrNet)[-which(degree(BMet_CtrNet)==0)]
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
+                rep("Control", length(Ctr))),
+  Data = c(T2, T1, Ctr)
+)
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Metamorphic"
+)
+
+T2<-degree(BAdl_T2Net)[-which(degree(BAdl_T2Net)==0)]
+T1<-degree(BAdl_T1Net)[-which(degree(BAdl_T1Net)==0)]
+Ctr<-degree(BAdl_CtrNet)[-which(degree(BAdl_CtrNet)==0)]
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
+                rep("Control", length(Ctr))),
+  Data = c(T2, T1, Ctr)
+)
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Sub-adult"
+)

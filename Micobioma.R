@@ -146,7 +146,7 @@ plot(ml_FTad[[1]], vertex.label.color="black",
      vertex.color = vertex.attributes(ml_FTad[[1]])$color, vertex.label.cex=.5,
      vertex.label.dist=1,layout=layout_with_kk, vertex.size = 5,
      main = "Tadpole under treatment 1")
-legend(x=-2.4, y=0.7, unq, title = "Mycobiome", pch=21, pt.bg=colors, pt.cex=1.3, cex=.8, bty="n", ncol=1)
+legend(x=-2.4, y=1, unq, title = "Mycobiome", pch=21, pt.bg=colors, pt.cex=1.3, cex=.8, bty="n", ncol=1)
 
 
 library(muxViz)
@@ -162,6 +162,7 @@ plot_multiplex3D(ml_FTad, layer.layout=lay,
                  edge.colors="#838B8B",
                  node.colors.aggr=NULL,
                  show.aggregate=F)
+
 # Metamorphic
 lay <- layoutMultiplex(ml_FMet, layout="kk", ggplot.format=F, box=T)
 plot_multiplex3D(ml_FMet, layer.layout=lay,
@@ -174,6 +175,7 @@ plot_multiplex3D(ml_FMet, layer.layout=lay,
                  edge.colors="#838B8B",
                  node.colors.aggr=NULL,
                  show.aggregate=F)
+
 # Sub-adult
 lay <- layoutMultiplex(ml_FAdl, layout="kk", ggplot.format=F, box=T)
 plot_multiplex3D(ml_FAdl, layer.layout=lay,
@@ -416,10 +418,10 @@ FMet_phyl_degree <- phyl_ctr_df(FMet_degree, c("Treatment 2", "Treatment 1", "Co
 FAdl_phyl_degree <- phyl_ctr_df(FAdl_degree, c("Treatment 2", "Treatment 1", "Control"),
                                 n_layers = 3)
 
-
+library(viridis)
 library(ggplot2)
 ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 2`),
-                             y = FTad_phyl_degree$`Treatment 2`, fill = Colors)) +
+                             y = FTad_phyl_degree$`Treatment 2`, fill = FTad_phyl_degree$Taxon)) +
   geom_bar(stat = "identity") +
   labs(title = "Phyla importance by degree \n Treatment 2") +
   xlab("Phylum") + ylab("Degree") +
@@ -427,7 +429,7 @@ ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degr
 
 
 ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 1`),
-                             y = FTad_phyl_degree$`Treatment 1`, fill = Colors)) +
+                             y = FTad_phyl_degree$`Treatment 1`, fill = FTad_phyl_degree$Taxon)) +
   geom_bar(stat = "identity") +
   labs(title = "Phyla importance by degree \n Treatment 1") +
   xlab("Phylum") + ylab("Degree") +
@@ -435,7 +437,7 @@ ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degr
 
 
 ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Control`),
-                             y = FTad_phyl_degree$`Control`, fill = Colors)) +
+                             y = FTad_phyl_degree$`Control`, fill = FTad_phyl_degree$Taxon)) +
   geom_bar(stat = "identity") +
   labs(title = "Phyla importance by degree \n Control") +
   xlab("Phylum") + ylab("Degree") +
@@ -443,8 +445,44 @@ ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degr
 
 ##### Centrality log-fold change #####
 
-
+###### Treatment 1 ######
 log2fc <- -log2((FTad_phyl_degree$Control+1)/(FTad_phyl_degree$`Treatment 1`+1))
+zscore <- (log2fc-mean(log2fc))/sd(log2fc)
+df_degree <- data.frame(
+  Phylum = FTad_phyl_degree$Taxon,
+  log2fc = log2fc,
+  z_score = zscore
+)
+
+library(ggpubr)
+
+ggbarplot(df_degree, x = "Phylum", y = "z_score",
+          fill = "Phylum",
+          color = "white",
+          palette = colors,
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 90,
+          ylab = "z_score",
+          rotate = TRUE,
+          ggtheme = theme_minimal()) +
+  theme(legend.position = "none")
+
+ggbarplot(df_degree, x = "Phylum", y = "log2fc",
+          fill = "Phylum",
+          color = "white",
+          palette = colors,
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 90,
+          ylab = "log2fc",
+          rotate = TRUE,
+          ggtheme = theme_minimal()) +
+  theme(legend.position = "none")
+
+###### Treatment 2 ######
+
+log2fc <- -log2((FTad_phyl_degree$Control+1)/(FTad_phyl_degree$`Treatment 2`+1))
 zscore <- (log2fc-mean(log2fc))/sd(log2fc)
 df_degree <- data.frame(
   Phylum = FTad_phyl_degree$Taxon,
@@ -480,6 +518,65 @@ ggbarplot(df_degree, x = "Phylum", y = "log2fc",
 
 
 
+
+##### Degree distribution violin plot #####
+
+T2<-degree(FTad_T2Net)[-which(degree(FTad_T2Net)==0)]
+T1<-degree(FTad_T1Net)[-which(degree(FTad_T1Net)==0)]
+Ctr<-degree(FTad_CtrNet)[-which(degree(FTad_CtrNet)==0)]
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
+                rep("Control", length(Ctr))),
+  Data = c(T2, T1, Ctr)
+)
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Tadpole"
+)
+
+T2<-degree(FMet_T2Net)[-which(degree(FMet_T2Net)==0)]
+T1<-degree(FMet_T1Net)[-which(degree(FMet_T1Net)==0)]
+Ctr<-degree(FMet_CtrNet)[-which(degree(FMet_CtrNet)==0)]
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
+                rep("Control", length(Ctr))),
+  Data = c(T2, T1, Ctr)
+)
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Metamorphic"
+)
+
+T2<-degree(FAdl_T2Net)[-which(degree(FAdl_T2Net)==0)]
+T1<-degree(FAdl_T1Net)[-which(degree(FAdl_T1Net)==0)]
+Ctr<-degree(FAdl_CtrNet)[-which(degree(FAdl_CtrNet)==0)]
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
+                rep("Control", length(Ctr))),
+  Data = c(T2, T1, Ctr)
+)
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Sub-adult"
+)
+
+##### Dysbiosis analysis #####
+
 # Transform the data into a phyloseq object
 tax_fungi<-as.matrix(hongos[,t1:t2])
 otus_fungi<-as.matrix(hongos[,-(t1:t2)])
@@ -496,6 +593,7 @@ rownames(otus_fungi)<-ID_otus
 # OTUs IDs as row names in the taxa table
 rownames(tax_fungi)<-ID_otus
 # Phyloseq objects
+library(phyloseq)
 otus_fungi<-otu_table(otus_fungi, taxa_are_rows = TRUE)
 tax_fungi<-tax_table(tax_fungi)
 physeq = phyloseq(otus_fungi, tax_fungi)
@@ -507,7 +605,7 @@ sample_data<-sample_data(meta_hongos)
 physeq2<-merge_phyloseq(physeq, sample_data)
 
 # Dysbiosis analysis
-
+library(dysbiosisR)
 # Bray-Curtis distance matrix
 dist.mat <- phyloseq::distance(physeq2, "bray")
 # Get reference samples
@@ -582,6 +680,7 @@ p4 <- plotDysbiosis(df=cloud.results,
                     colors=c(Treatment1="orange", Treatment2="red",
                              Control="green"),
                     show_points = FALSE) +
-  labs(x="", y="Dysbiosis CLOUD Score")
+  labs(x="", y="Dysbiosis CLOUD Score") +
+  theme_bw(base_size = 14)
 p4
 

@@ -225,7 +225,7 @@ ggplot(BTad_phyl_degree, aes(x = reorder(BTad_phyl_degree$Taxon, -BTad_phyl_degr
 
 ##### Centrality log-fold change #####
 
-
+###### Treatment 1 logFC ######
 log2fc <- -log2((BTad_phyl_degree$Control+1)/(BTad_phyl_degree$`Treatment 1`+1))
 zscore <- (log2fc-mean(log2fc))/sd(log2fc)
 df_degree <- data.frame(
@@ -239,7 +239,7 @@ library(ggpubr)
 ggbarplot(df_degree, x = "Phylum", y = "z_score",
           fill = "Phylum",
           color = "white",
-          palette = colors,
+          palette = sample(viridis(100), nrow(df_degree)),
           sort.val = "desc",
           sort.by.groups = FALSE,
           x.text.angle = 90,
@@ -251,7 +251,7 @@ ggbarplot(df_degree, x = "Phylum", y = "z_score",
 ggbarplot(df_degree, x = "Phylum", y = "log2fc",
           fill = "Phylum",
           color = "white",
-          palette = colors,
+          palette = sample(viridis(100), nrow(df_degree)),
           sort.val = "desc",
           sort.by.groups = FALSE,
           x.text.angle = 90,
@@ -260,3 +260,37 @@ ggbarplot(df_degree, x = "Phylum", y = "log2fc",
           ggtheme = theme_minimal()) +
   theme(legend.position = "none")
 
+###### Treatment 2 logFC ######
+log2fc <- -log2((BTad_phyl_degree$Control+1)/(BTad_phyl_degree$`Treatment 2`+1))
+zscore <- (log2fc-mean(log2fc))/sd(log2fc)
+df_degree <- data.frame(
+  Phylum = BTad_phyl_degree$Taxon,
+  log2fc = log2fc,
+  z_score = zscore
+)
+
+library(ggpubr)
+
+ggbarplot(df_degree, x = "Phylum", y = "z_score",
+          fill = "Phylum",
+          color = "white",
+          palette = sample(viridis(100), nrow(df_degree)),
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 90,
+          ylab = "z_score",
+          rotate = TRUE,
+          ggtheme = theme_minimal()) +
+  theme(legend.position = "none")
+
+ggbarplot(df_degree, x = "Phylum", y = "log2fc",
+          fill = "Phylum",
+          color = "white",
+          palette = sample(viridis(100), nrow(df_degree)),
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 90,
+          ylab = "log2fc",
+          rotate = TRUE,
+          ggtheme = theme_minimal()) +
+  theme(legend.position = "none")
