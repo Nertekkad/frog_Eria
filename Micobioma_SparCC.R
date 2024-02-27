@@ -106,15 +106,51 @@ FAdl_Ctr<-FAdl_Ctr[, -which(is.na(colnames(FAdl_Ctr)))]
 ##### ARACNe networks #####
 
 # Tadpole
-FTad_T1Net<-net_inference(FTad_T1, "sparcc")
-FTad_T2Net<-net_inference(FTad_T2, "sparcc")
-FTad_CtrNet<-net_inference(FTad_Ctr, "sparcc")
+#FTad_T1Net<-net_inference(FTad_T1, "sparcc", 0.4)
+#FTad_T2Net<-net_inference(FTad_T2, "sparcc", 0.4)
+#FTad_CtrNet<-net_inference(FTad_Ctr, "sparcc", 0.4)
 # Metamorphic
-FMet_T1Net<-net_inference(FMet_T1, "sparcc")
-FMet_T2Net<-net_inference(FMet_T2, "sparcc")
-FMet_CtrNet<-net_inference(FMet_Ctr, "sparcc")
+#FMet_T1Net<-net_inference(FMet_T1, "sparcc", 0.4)
+#FMet_T2Net<-net_inference(FMet_T2, "sparcc", 0.4)
+#FMet_CtrNet<-net_inference(FMet_Ctr, "sparcc", 0.4)
 # Sub-adult
-FAdl_T1Net<-net_inference(FAdl_T1, "sparcc")
-FAdl_T2Net<-net_inference(FAdl_T2, "sparcc")
-FAdl_CtrNet<-net_inference(FAdl_Ctr, "sparcc")
+#FAdl_T1Net<-net_inference(FAdl_T1, "sparcc", 0.4)
+#FAdl_T2Net<-net_inference(FAdl_T2, "sparcc", 0.4)
+#FAdl_CtrNet<-net_inference(FAdl_Ctr, "sparcc", 0.4)
 
+#ml_FTad_sp <- list(FTad_T2Net, FTad_T1Net, FTad_CtrNet)
+#ml_FMet_sp <- list(FMet_T2Net, FMet_T1Net, FMet_CtrNet)
+#ml_FAdl_sp <- list(FAdl_T2Net, FAdl_T1Net, FAdl_CtrNet)
+
+#saveRDS(ml_FTad_sp, "~/frog_Eria/sparCC_Nets/ml_FTad_sp.RDS")
+#saveRDS(ml_FMet_sp, "~/frog_Eria/sparCC_Nets/ml_FMet_sp.RDS")
+#saveRDS(ml_FAdl_sp, "~/frog_Eria/sparCC_Nets/ml_FAdl_sp.RDS")
+
+ml_FTad_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_FTad_sp.RDS")
+ml_FMet_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_FMet_sp.RDS")
+ml_FAdl_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_FAdl_sp.RDS")
+
+#### Multilayer networks ####
+
+unq<-unique(tax_fungi[,"Phylum"])
+unq<-unq[-c(which(unq == "unidentified"), which(is.na(unq)))]
+colors <- sample(rainbow(100), length(unq))
+
+# Abundance tables list
+abs_FTad<-list(FTad_T2, FTad_T1, FTad_Ctr) # Tadpole
+abs_FMet<-list(FMet_T2, FMet_T1, FMet_Ctr) # Metamorphic
+abs_FAdl<-list(FAdl_T2, FAdl_T1, FAdl_Ctr) # Adult
+
+# Vertex colored by phylum
+ml_FTad_sp <- v_colored_ml(ml_FTad_sp, tax_fungi, g_tax = "Phylum",
+                           p_tax = "Genus", g_colors = colors)
+ml_FMet_sp <- v_colored_ml(ml_FMet_sp, tax_fungi, g_tax = "Phylum",
+                           p_tax = "Genus", g_colors = colors)
+ml_FAdl_sp <- v_colored_ml(ml_FAdl_sp, tax_fungi, g_tax = "Phylum",
+                           p_tax = "Genus", g_colors = colors)
+
+plot(ml_FTad_sp[[1]], vertex.label.color="black",
+     vertex.color = vertex.attributes(ml_FTad_sp[[1]])$color, vertex.label.cex=.5,
+     vertex.label.dist=1,layout=layout_with_kk, vertex.size = 5,
+     main = "Tadpole under treatment 1")
+legend(x=-2.4, y=1, unq, title = "Mycobiome", pch=21, pt.bg=colors, pt.cex=1.3, cex=.8, bty="n", ncol=1)
