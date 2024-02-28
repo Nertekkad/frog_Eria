@@ -120,9 +120,9 @@ BAdl_Ctr<-BAdl_Ctr[, -which(is.na(colnames(BAdl_Ctr)))]
 #BAdl_T2Net<-net_inference(BAdl_T2, "sparcc", 0.4)
 #BAdl_CtrNet<-net_inference(BAdl_Ctr, "sparcc", 0.4)
 
-ml_BTad_sp<-readRDS("~/frog_Eria/ml_BTad_sp.RDS")
-ml_BMet_sp<-readRDS("~/frog_Eria/ml_BMet_sp.RDS")
-ml_BAdl_sp<-readRDS("~/frog_Eria/ml_BAdl_sp.RDS")
+ml_BTad_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BTad_sp.RDS")
+ml_BMet_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BMet_sp.RDS")
+ml_BAdl_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BAdl_sp.RDS")
 
 #### Multilayer networks ####
 
