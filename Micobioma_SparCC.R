@@ -132,9 +132,10 @@ ml_FAdl_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_FAdl_sp.RDS")
 
 #### Multilayer networks ####
 
+library(viridis)
 unq<-unique(tax_fungi[,"Phylum"])
 unq<-unq[-c(which(unq == "unidentified"), which(is.na(unq)))]
-colors <- sample(rainbow(100), length(unq))
+colors <- sample(viridis(100), length(unq))
 
 # Abundance tables list
 abs_FTad<-list(FTad_T2, FTad_T1, FTad_Ctr) # Tadpole
@@ -154,3 +155,121 @@ plot(ml_FTad_sp[[1]], vertex.label.color="black",
      vertex.label.dist=1,layout=layout_with_kk, vertex.size = 5,
      main = "Tadpole under treatment 1")
 legend(x=-2.4, y=1, unq, title = "Mycobiome", pch=21, pt.bg=colors, pt.cex=1.3, cex=.8, bty="n", ncol=1)
+
+library(muxViz)
+library(mlBioNets)
+# Tadpole
+lay <- layoutMultiplex(ml_FTad_sp, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_FTad_sp, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_FTad, ml_FTad_sp, 10),
+                 node.colors=node_color_mat(ml_FTad_sp, "phylo"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+# Metamorphic
+lay <- layoutMultiplex(ml_FMet_sp, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_FMet_sp, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_FMet, ml_FMet_sp, 10),
+                 node.colors=node_color_mat(ml_FMet_sp, "phylo"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+# Sub-adult
+lay <- layoutMultiplex(ml_FAdl_sp, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_FAdl_sp, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_FAdl, ml_FAdl_sp, 10),
+                 node.colors=node_color_mat(ml_FAdl_sp, "phylo"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+#### Centrality analysis ####
+
+ml_FTad_sp <- ml_TaxGroup(ml_FTad_sp, tax_fungi, "Phylum", "Genus")
+ml_FMet_sp <- ml_TaxGroup(ml_FMet_sp, tax_fungi, "Phylum", "Genus")
+ml_FAdl_sp <- ml_TaxGroup(ml_FAdl_sp, tax_fungi, "Phylum", "Genus")
+
+FTad_degree <- ctr_df(ml_FTad_sp, c("Treatment 2", "Treatment 1", "Control"))
+FMet_degree <- ctr_df(ml_FMet_sp, c("Treatment 2", "Treatment 1", "Control"))
+FAdl_degree <- ctr_df(ml_FAdl_sp, c("Treatment 2", "Treatment 1", "Control"))
+
+FTad_phyl_degree <- phyl_ctr_df(FTad_degree, c("Treatment 2", "Treatment 1", "Control"),
+                                n_layers = 3)
+FMet_phyl_degree <- phyl_ctr_df(FMet_degree, c("Treatment 2", "Treatment 1", "Control"),
+                                n_layers = 3)
+FAdl_phyl_degree <- phyl_ctr_df(FAdl_degree, c("Treatment 2", "Treatment 1", "Control"),
+                                n_layers = 3)
+
+library(ggplot2)
+ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 2`),
+                             y = FTad_phyl_degree$`Treatment 2`, fill = FTad_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Phyla importance by degree \n Treatment 2") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 1`),
+                             y = FTad_phyl_degree$`Treatment 1`, fill = FTad_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Phyla importance by degree \n Treatment 1") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Control`),
+                             y = FTad_phyl_degree$`Control`, fill = FTad_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Phyla importance by degree \n Control") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+##### Centrality log-fold change #####
+
+###### Treatment 1 ######
+log2fc <- -log2((FTad_phyl_degree$Control+1)/(FTad_phyl_degree$`Treatment 1`+1))
+zscore <- (log2fc-mean(log2fc))/sd(log2fc)
+df_degree <- data.frame(
+  Phylum = FTad_phyl_degree$Taxon,
+  log2fc = log2fc,
+  z_score = zscore
+)
+
+library(ggpubr)
+
+ggbarplot(df_degree, x = "Phylum", y = "z_score",
+          fill = "Phylum",
+          color = "white",
+          palette = colors,
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 90,
+          ylab = "z_score",
+          rotate = TRUE,
+          ggtheme = theme_minimal()) +
+  theme(legend.position = "none")
+
+ggbarplot(df_degree, x = "Phylum", y = "log2fc",
+          fill = "Phylum",
+          color = "white",
+          palette = colors,
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 90,
+          ylab = "log2fc",
+          rotate = TRUE,
+          ggtheme = theme_minimal()) +
+  theme(legend.position = "none")
