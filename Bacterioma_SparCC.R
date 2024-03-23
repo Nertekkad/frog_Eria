@@ -120,27 +120,35 @@ BAdl_Ctr<-BAdl_Ctr[, -which(is.na(colnames(BAdl_Ctr)))]
 #BAdl_T2Net<-net_inference(BAdl_T2, "sparcc", 0.4)
 #BAdl_CtrNet<-net_inference(BAdl_Ctr, "sparcc", 0.4)
 
-ml_BTad_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BTad_sp.RDS")
-ml_BMet_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BMet_sp.RDS")
-ml_BAdl_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BAdl_sp.RDS")
+ml_BTad_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BTad2.RDS")
+ml_BMet_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BMet2.RDS")
+ml_BAdl_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BAdl2.RDS")
 
 #### Multilayer networks ####
 
 unq<-unique(tax_bacter[,"Phylum"])
 unq<-unq[-c(which(unq == "uncultured"), which(is.na(unq)))]
-colors <- sample(rainbow(100), length(unq))
+colors <- sample(viridis(100), length(unq))
 
 # Abundance tables list
 abs_BTad<-list(BTad_T2, BTad_T1, BTad_Ctr) # Tadpole
 abs_BMet<-list(BMet_T2, BMet_T1, BMet_Ctr) # Metamorphic
 abs_BAdl<-list(BAdl_T2, BAdl_T1, BAdl_Ctr) # Adult
 
+ml_BTad_sp <- v_colored_ml(ml_BTad_sp, tax_bacter, g_tax = "Phylum",
+                         p_tax = "Genus", g_colors = colors)
+ml_BMet_sp <- v_colored_ml(ml_BMet_sp, tax_bacter, g_tax = "Phylum",
+                         p_tax = "Genus", g_colors = colors)
+ml_BAdl_sp <- v_colored_ml(ml_BAdl_sp, tax_bacter, g_tax = "Phylum",
+                         p_tax = "Genus", g_colors = colors)
+
+
 library(igraph)
 plot(ml_BTad_sp[[1]], vertex.label.color="black",
      vertex.color = vertex.attributes(ml_BTad_sp[[1]])$color, vertex.label.cex=.5,
      vertex.label.dist=1,layout=layout_with_kk, vertex.size = 5,
      main = "Tadpole under treatment 1")
-legend(x=-2.4, y=0.7, unq, title = "Bacteriome", pch=21, pt.bg=colors, pt.cex=1.3, cex=.8, bty="n", ncol=1)
+legend(x=-2.4, y=1.4, unq, title = "Bacteriome", pch=21, pt.bg=colors, pt.cex=1.3, cex=.8, bty="n", ncol=1)
 
 library(muxViz)
 # Tadpole
@@ -198,99 +206,184 @@ BMet_phyl_degree <- phyl_ctr_df(BMet_degree, c("Treatment 2", "Treatment 1", "Co
 BAdl_phyl_degree <- phyl_ctr_df(BAdl_degree, c("Treatment 2", "Treatment 1", "Control"),
                                 n_layers = 3)
 
+library(gridExtra)
+grid.arrange(
+  phyl_ctr_plot(BTad_phyl_degree, "Treatment 2", "Phyla importance by degree \n Treatment 2"),
+  phyl_ctr_plot(BTad_phyl_degree, "Treatment 1", "Phyla importance by degree \n Treatment 1"),
+  phyl_ctr_plot(BTad_phyl_degree, "Control", "Phyla importance by degree \n Control")
+)
 
-library(ggplot2)
-ggplot(BTad_phyl_degree, aes(x = reorder(BTad_phyl_degree$Taxon, -BTad_phyl_degree$`Treatment 2`),
-                             y = BTad_phyl_degree$`Treatment 2`, fill = Colors)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Phyla importance by degree \n Treatment 2") +
-  xlab("Phylum") + ylab("Degree") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+grid.arrange(
+  phyl_ctr_plot(BMet_phyl_degree, "Treatment 2", "Phyla importance by degree \n Treatment 2"),
+  phyl_ctr_plot(BMet_phyl_degree, "Treatment 1", "Phyla importance by degree \n Treatment 1"),
+  phyl_ctr_plot(BMet_phyl_degree, "Control", "Phyla importance by degree \n Control")
+)
 
+grid.arrange(
+  phyl_ctr_plot(BAdl_phyl_degree, "Treatment 2", "Phyla importance by degree \n Treatment 2"),
+  phyl_ctr_plot(BAdl_phyl_degree, "Treatment 1", "Phyla importance by degree \n Treatment 1"),
+  phyl_ctr_plot(BAdl_phyl_degree, "Control", "Phyla importance by degree \n Control")
+)
 
-ggplot(BTad_phyl_degree, aes(x = reorder(BTad_phyl_degree$Taxon, -BTad_phyl_degree$`Treatment 1`),
-                             y = BTad_phyl_degree$`Treatment 1`, fill = Colors)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Phyla importance by degree \n Treatment 1") +
-  xlab("Phylum") + ylab("Degree") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-
-ggplot(BTad_phyl_degree, aes(x = reorder(BTad_phyl_degree$Taxon, -BTad_phyl_degree$`Control`),
-                             y = BTad_phyl_degree$`Control`, fill = Colors)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Phyla importance by degree \n Control") +
-  xlab("Phylum") + ylab("Degree") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ##### Centrality log-fold change #####
 
-###### Treatment 1 logFC ######
-log2fc <- -log2((BTad_phyl_degree$Control+1)/(BTad_phyl_degree$`Treatment 1`+1))
-zscore <- (log2fc-mean(log2fc))/sd(log2fc)
-df_degree <- data.frame(
-  Phylum = BTad_phyl_degree$Taxon,
-  log2fc = log2fc,
-  z_score = zscore
-)
 
-library(ggpubr)
+##### Centrality log-fold change #####
 
-ggbarplot(df_degree, x = "Phylum", y = "z_score",
-          fill = "Phylum",
-          color = "white",
-          palette = sample(viridis(100), nrow(df_degree)),
-          sort.val = "desc",
-          sort.by.groups = FALSE,
-          x.text.angle = 90,
-          ylab = "z_score",
-          rotate = TRUE,
-          ggtheme = theme_minimal()) +
-  theme(legend.position = "none")
+library(gridExtra)
+grid.arrange(log2fc(BTad_phyl_degree, "Control", "Treatment 1"),
+             log2fc(BTad_phyl_degree, "Control", "Treatment 2"),
+             log2fc(BTad_phyl_degree, "Treatment 1", "Treatment 2"),
+             ncol = 3)
 
-ggbarplot(df_degree, x = "Phylum", y = "log2fc",
-          fill = "Phylum",
-          color = "white",
-          palette = sample(viridis(100), nrow(df_degree)),
-          sort.val = "desc",
-          sort.by.groups = FALSE,
-          x.text.angle = 90,
-          ylab = "log2fc",
-          rotate = TRUE,
-          ggtheme = theme_minimal()) +
-  theme(legend.position = "none")
 
-###### Treatment 2 logFC ######
-log2fc <- -log2((BTad_phyl_degree$Control+1)/(BTad_phyl_degree$`Treatment 2`+1))
-zscore <- (log2fc-mean(log2fc))/sd(log2fc)
-df_degree <- data.frame(
-  Phylum = BTad_phyl_degree$Taxon,
-  log2fc = log2fc,
-  z_score = zscore
-)
+grid.arrange(log2fc(BMet_phyl_degree, "Control", "Treatment 1"),
+             log2fc(BMet_phyl_degree, "Control", "Treatment 2"),
+             log2fc(BMet_phyl_degree, "Treatment 1", "Treatment 2"),
+             ncol = 3)
 
-library(ggpubr)
+grid.arrange(log2fc(BAdl_phyl_degree, "Control", "Treatment 1"),
+             log2fc(BAdl_phyl_degree, "Control", "Treatment 2"),
+             log2fc(BAdl_phyl_degree, "Treatment 1", "Treatment 2"),
+             ncol = 3)
 
-ggbarplot(df_degree, x = "Phylum", y = "z_score",
-          fill = "Phylum",
-          color = "white",
-          palette = sample(viridis(100), nrow(df_degree)),
-          sort.val = "desc",
-          sort.by.groups = FALSE,
-          x.text.angle = 90,
-          ylab = "z_score",
-          rotate = TRUE,
-          ggtheme = theme_minimal()) +
-  theme(legend.position = "none")
+##### Multiplex centrality #####
 
-ggbarplot(df_degree, x = "Phylum", y = "log2fc",
-          fill = "Phylum",
-          color = "white",
-          palette = sample(viridis(100), nrow(df_degree)),
-          sort.val = "desc",
-          sort.by.groups = FALSE,
-          x.text.angle = 90,
-          ylab = "log2fc",
-          rotate = TRUE,
-          ggtheme = theme_minimal()) +
-  theme(legend.position = "none")
+###### Degree ######
+
+ml_BTad_degree <- ctr_ml(ml_BTad_sp, "degree")
+ml_BMet_degree <- ctr_ml(ml_BMet_sp, "degree")
+ml_BAdl_degree <- ctr_ml(ml_BAdl_sp, "degree")
+
+# Tadpole
+lay <- layoutMultiplex(ml_BTad_degree, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BTad_degree, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BTad, ml_BTad_degree, 2),
+                 node.colors=node_color_mat(ml_BTad_degree, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+# Metamorphic
+lay <- layoutMultiplex(ml_BMet_degree, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BMet_degree, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BMet, ml_BMet_degree, 2),
+                 node.colors=node_color_mat(ml_BMet_degree, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+# Sub-adult
+lay <- layoutMultiplex(ml_BAdl_degree, layout="kk", ggplot.format=F, box=T)
+plot_multiplex3D(ml_BAdl_degree, layer.layout=lay,
+                 layer.colors=c("red3", "orange", "green3"),
+                 layer.shift.x=0.5, layer.space=2,
+                 layer.labels=NULL, layer.labels.cex=1.5,
+                 node.size.values="auto",
+                 node.size.scale=abs_mat(abs_BAdl, ml_BAdl_degree, 2),
+                 node.colors=node_color_mat(ml_BAdl_degree, "centrality"),
+                 edge.colors="#838B8B",
+                 node.colors.aggr=NULL,
+                 show.aggregate=F)
+
+
+#### Abundance vs degree ####
+
+layer_names<-c("Control", "Treatment 1", "Treatment 2")
+layer_colors<-c("green", "orange", "red")
+
+cor_degree_abs(ml_BTad_sp, abs_BTad, layer_names, layer_colors, "Tadpole")
+cor_degree_abs(ml_BMet_sp, abs_BMet, layer_names, layer_colors, "Metamorphic")
+cor_degree_abs(ml_BAdl_sp, abs_BAdl, layer_names, layer_colors, "Sub-adult")
+
+
+#### Topological properties ####
+
+treatments <- c(20, 25, 29)
+frog_ml_properties<-rbind(ml_properties(ml_BTad_sp, treatments),
+                          ml_properties(ml_BMet_sp, treatments),
+                          ml_properties(ml_BAdl_sp, treatments))
+
+Stage = c(rep("Tadpole", length(ml_BTad_sp)),
+          rep("Metamorphic",length(ml_BTad_sp)),
+          rep("Sub-adult", length(ml_BTad_sp)))
+
+frog_ml_properties <- cbind(frog_ml_properties, Stage)
+
+require(ggplot2)
+
+p1<-ggplot(frog_ml_properties, aes(x = Treatments, y = Mean_degree, color = Stage)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  
+  labs(title = "",
+       x = "Temperature",
+       y = "Mean degree") +
+  scale_color_manual(values = c("darkgreen", "purple4", "brown4")) +
+  theme_minimal()
+
+p2<-ggplot(frog_ml_properties, aes(x = Treatments, y = sd_degree, color = Stage)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  
+  labs(title = "",
+       x = "Temperature",
+       y = "SD of degree") +
+  scale_color_manual(values = c("darkgreen", "purple4", "brown4")) +
+  theme_minimal()
+
+p3<-ggplot(frog_ml_properties, aes(x = Treatments, y = Clusterization, color = Stage)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  
+  labs(title = "",
+       x = "Temperature",
+       y = "Transitivity") +
+  scale_color_manual(values = c("darkgreen", "purple4", "brown4")) +
+  theme_minimal()
+
+p4<-ggplot(frog_ml_properties, aes(x = Treatments, y = Edge_density, color = Stage)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  
+  labs(title = "",
+       x = "Temperature",
+       y = "Edge density") +
+  scale_color_manual(values = c("darkgreen", "purple4", "brown4")) +
+  theme_minimal()
+
+p5<-ggplot(frog_ml_properties, aes(x = Treatments, y = Connected_nodes, color = Stage)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  
+  labs(title = "",
+       x = "Temperature",
+       y = "Proportion of linked nodes") +
+  scale_color_manual(values = c("darkgreen", "purple4", "brown4")) +
+  theme_minimal()
+
+p6<-ggplot(frog_ml_properties, aes(x = Treatments, y = Modularity, color = Stage)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  
+  labs(title = "",
+       x = "Temperature",
+       y = "Modularity") +
+  scale_color_manual(values = c("darkgreen", "purple4", "brown4")) +
+  theme_minimal()
+
+grid.arrange(p1, p2, p3, p4, p5, p6, ncol = 3)
+
+# Table
+
+library(kableExtra)
+kable(frog_ml_properties) %>% kable_styling()
+
+# Slopes and R2
+
+kable(slope_R2(ml_properties(ml_BTad_sp, treatments))) %>% kable_styling()
+kable(slope_R2(ml_properties(ml_BMet_sp, treatments))) %>% kable_styling()
+kable(slope_R2(ml_properties(ml_BAdl_sp, treatments))) %>% kable_styling()
