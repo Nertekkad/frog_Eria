@@ -873,10 +873,3 @@ p4 <- plotDysbiosis(df=cloud.results,
   theme_bw(base_size = 14)
 p4
 
-
-
-
-
-
-
-
