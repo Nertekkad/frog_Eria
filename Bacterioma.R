@@ -586,6 +586,64 @@ plot_multiplex3D(ml_BAdl_bet, layer.layout=lay,
                  node.colors.aggr=NULL,
                  show.aggregate=F)
 
+
+#### Degree violin plots ####
+
+T2<-degree(ml_BAdl[[3]])[-which(degree(ml_BAdl[[3]])==0)]
+T1<-degree(ml_BAdl[[2]])[-which(degree(ml_BAdl[[2]])==0)]
+Ctr<-degree(ml_BAdl[[1]])[-which(degree(ml_BAdl[[1]])==0)]
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
+                rep("Control", length(Ctr))),
+  Data = c(T2, T1, Ctr)
+)
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Sub-adults"
+)
+
+T2<-degree(ml_BMet[[3]])[-which(degree(ml_BMet[[3]])==0)]
+T1<-degree(ml_BMet[[2]])[-which(degree(ml_BMet[[2]])==0)]
+Ctr<-degree(ml_BMet[[1]])[-which(degree(ml_BMet[[1]])==0)]
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
+                rep("Control", length(Ctr))),
+  Data = c(T2, T1, Ctr)
+)
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Metamorphic"
+)
+
+T2<-degree(ml_BTad[[3]])[-which(degree(ml_BTad[[3]])==0)]
+T1<-degree(ml_BTad[[2]])[-which(degree(ml_BTad[[2]])==0)]
+Ctr<-degree(ml_BTad[[1]])[-which(degree(ml_BTad[[1]])==0)]
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
+                rep("Control", length(Ctr))),
+  Data = c(T2, T1, Ctr)
+)
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Tadpole"
+)
+
+
 ##### Centrality log-fold change #####
 
 library(gridExtra)
@@ -816,66 +874,8 @@ p4 <- plotDysbiosis(df=cloud.results,
 p4
 
 
-T2<-degree(ml_BAdl_sp[[3]])[-which(degree(ml_BAdl_sp[[3]])==0)]
-T1<-degree(ml_BAdl_sp[[2]])[-which(degree(ml_BAdl_sp[[2]])==0)]
-Ctr<-degree(ml_BAdl_sp[[1]])[-which(degree(ml_BAdl_sp[[1]])==0)]
-
-T2<-degree(BTad_T2Net)[-which(degree(BTad_T2Net)==0)]
-T1<-degree(BTad_T1Net)[-which(degree(BTad_T1Net)==0)]
-Ctr<-degree(BTad_CtrNet)[-which(degree(BTad_CtrNet)==0)]
-
-df_violinplot<-data.frame(
-  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
-                rep("Control", length(Ctr))),
-  Data = c(T2, T1, Ctr)
-)
-
-library(ggstatsplot)
-ggbetweenstats(
-  data  = df_violinplot,
-  x     = Treatment,
-  y     = Data,
-  title = "Sub-adults"
-)
-
-T2<-degree(BMet_T2Net)[-which(degree(BMet_T2Net)==0)]
-T1<-degree(BMet_T1Net)[-which(degree(BMet_T1Net)==0)]
-Ctr<-degree(BMet_CtrNet)[-which(degree(BMet_CtrNet)==0)]
-
-df_violinplot<-data.frame(
-  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
-                rep("Control", length(Ctr))),
-  Data = c(T2, T1, Ctr)
-)
-
-library(ggstatsplot)
-ggbetweenstats(
-  data  = df_violinplot,
-  x     = Treatment,
-  y     = Data,
-  title = "Metamorphic"
-)
-
-T2<-degree(BAdl_T2Net)[-which(degree(BAdl_T2Net)==0)]
-T1<-degree(BAdl_T1Net)[-which(degree(BAdl_T1Net)==0)]
-Ctr<-degree(BAdl_CtrNet)[-which(degree(BAdl_CtrNet)==0)]
-
-df_violinplot<-data.frame(
-  Treatment = c(rep("Treatment 2", length(T2)), rep("Treatment 1", length(T1)),
-                rep("Control", length(Ctr))),
-  Data = c(T2, T1, Ctr)
-)
-
-library(ggstatsplot)
-ggbetweenstats(
-  data  = df_violinplot,
-  x     = Treatment,
-  y     = Data,
-  title = "Sub-adult"
-)
 
 
-g<-erdos.renyi.game(100, 0.4)
 
 
 
