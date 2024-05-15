@@ -126,9 +126,9 @@ FAdl_Ctr<-FAdl_Ctr[, -which(is.na(colnames(FAdl_Ctr)))]
 #saveRDS(ml_FMet_sp, "~/frog_Eria/sparCC_Nets/ml_FMet_sp.RDS")
 #saveRDS(ml_FAdl_sp, "~/frog_Eria/sparCC_Nets/ml_FAdl_sp.RDS")
 
-ml_FTad_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_FTad_sp.RDS")
-ml_FMet_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_FMet_sp.RDS")
-ml_FAdl_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_FAdl_sp.RDS")
+ml_FTad_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_FTad2.RDS")
+ml_FMet_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_FMet2.RDS")
+ml_FAdl_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_FAdl2.RDS")
 
 #### Multilayer networks ####
 
@@ -215,27 +215,85 @@ FAdl_phyl_degree <- phyl_ctr_df(FAdl_degree, c("Treatment 2", "Treatment 1", "Co
                                 n_layers = 3)
 
 library(ggplot2)
-ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 2`),
-                             y = FTad_phyl_degree$`Treatment 2`, fill = FTad_phyl_degree$Taxon)) +
+p1 <- ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 2`),
+                                   y = FTad_phyl_degree$`Treatment 2`, fill = FTad_phyl_degree$Taxon)) +
   geom_bar(stat = "identity") +
-  labs(title = "Phyla importance by degree \n Treatment 2") +
+  labs(title = "Tadpoles under treatment 2") +
   xlab("Phylum") + ylab("Degree") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(legend.position = "none")
 
-ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 1`),
-                             y = FTad_phyl_degree$`Treatment 1`, fill = FTad_phyl_degree$Taxon)) +
+p2 <- ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 1`),
+                                   y = FTad_phyl_degree$`Treatment 1`, fill = FTad_phyl_degree$Taxon)) +
   geom_bar(stat = "identity") +
-  labs(title = "Phyla importance by degree \n Treatment 1") +
+  labs(title = "Tadpoles under treatment 1") +
   xlab("Phylum") + ylab("Degree") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(legend.position = "none")
 
-
-ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Control`),
-                             y = FTad_phyl_degree$`Control`, fill = FTad_phyl_degree$Taxon)) +
+p3 <- ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Control`),
+                                   y = FTad_phyl_degree$`Control`, fill = FTad_phyl_degree$Taxon)) +
   geom_bar(stat = "identity") +
-  labs(title = "Phyla importance by degree \n Control") +
+  labs(title = "Tadpoles under control condition") +
   xlab("Phylum") + ylab("Degree") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(legend.position = "none")
+
+# Metamorphic
+
+p4 <- ggplot(FMet_phyl_degree, aes(x = reorder(FMet_phyl_degree$Taxon, -FMet_phyl_degree$`Treatment 2`),
+                                   y = FMet_phyl_degree$`Treatment 2`, fill = FMet_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Metamorphic under treatment 2") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(legend.position = "none")
+
+p5 <- ggplot(FMet_phyl_degree, aes(x = reorder(FMet_phyl_degree$Taxon, -FMet_phyl_degree$`Treatment 1`),
+                                   y = FMet_phyl_degree$`Treatment 1`, fill = FMet_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Metamorphic under treatment 1") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(legend.position = "none")
+
+p6 <- ggplot(FMet_phyl_degree, aes(x = reorder(FMet_phyl_degree$Taxon, -FMet_phyl_degree$`Control`),
+                                   y = FMet_phyl_degree$`Control`, fill = FMet_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Metamorphic under control conditions") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(legend.position = "none")
+
+# Sub-adults
+
+p7 <- ggplot(FAdl_phyl_degree, aes(x = reorder(FAdl_phyl_degree$Taxon, -FAdl_phyl_degree$`Treatment 2`),
+                                   y = FAdl_phyl_degree$`Treatment 2`, fill = FAdl_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Sub-adults under treatment 2") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(legend.position = "none")
+
+p8 <- ggplot(FAdl_phyl_degree, aes(x = reorder(FAdl_phyl_degree$Taxon, -FAdl_phyl_degree$`Treatment 1`),
+                                   y = FAdl_phyl_degree$`Treatment 1`, fill = FAdl_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Sub-adults under treatment 1") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(legend.position = "none")
+
+p9 <- ggplot(FAdl_phyl_degree, aes(x = reorder(FAdl_phyl_degree$Taxon, -FAdl_phyl_degree$`Control`),
+                                   y = FAdl_phyl_degree$`Control`, fill = FAdl_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Sub-adults under control conditions") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(legend.position = "none")
+
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, ncol = 3)
+
 
 ##### Centrality log-fold change #####
 
@@ -273,3 +331,4 @@ ggbarplot(df_degree, x = "Phylum", y = "log2fc",
           rotate = TRUE,
           ggtheme = theme_minimal()) +
   theme(legend.position = "none")
+

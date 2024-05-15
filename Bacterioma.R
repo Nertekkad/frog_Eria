@@ -644,7 +644,7 @@ ggbetweenstats(
 )
 
 
-##### Centrality log-fold change #####
+#### Centrality log-fold change ####
 
 library(gridExtra)
 grid.arrange(log2fc(BTad_phyl_degree, "Control", "Treatment 1"),

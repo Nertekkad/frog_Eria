@@ -421,101 +421,94 @@ FAdl_phyl_degree <- phyl_ctr_df(FAdl_degree, c("Treatment 2", "Treatment 1", "Co
 
 library(viridis)
 library(ggplot2)
-ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 2`),
-                             y = FTad_phyl_degree$`Treatment 2`, fill = FTad_phyl_degree$Taxon)) +
+
+p1<-ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 2`),
+                                 y = FTad_phyl_degree$`Treatment 2`, fill = FTad_phyl_degree$Taxon)) +
   geom_bar(stat = "identity") +
-  labs(title = "Phyla importance by degree \n Treatment 2") +
+  labs(title = "Tadpoles' Treatment 2") +
   xlab("Phylum") + ylab("Degree") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "none")
 
 
-ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 1`),
-                             y = FTad_phyl_degree$`Treatment 1`, fill = FTad_phyl_degree$Taxon)) +
+p2<-ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Treatment 1`),
+                                 y = FTad_phyl_degree$`Treatment 1`, fill = FTad_phyl_degree$Taxon)) +
   geom_bar(stat = "identity") +
-  labs(title = "Phyla importance by degree \n Treatment 1") +
+  labs(title = "Tadpoles' Treatment 1") +
   xlab("Phylum") + ylab("Degree") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "none")
 
 
-ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Control`),
-                             y = FTad_phyl_degree$`Control`, fill = FTad_phyl_degree$Taxon)) +
+p3<-ggplot(FTad_phyl_degree, aes(x = reorder(FTad_phyl_degree$Taxon, -FTad_phyl_degree$`Control`),
+                                 y = FTad_phyl_degree$`Control`, fill = FTad_phyl_degree$Taxon)) +
   geom_bar(stat = "identity") +
-  labs(title = "Phyla importance by degree \n Control") +
+  labs(title = "Tadpoles' Control") +
   xlab("Phylum") + ylab("Degree") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "none")
+
+
+# Metamorphics
+p4<-ggplot(FMet_phyl_degree, aes(x = reorder(FMet_phyl_degree$Taxon, -FMet_phyl_degree$`Treatment 2`),
+                                 y = FMet_phyl_degree$`Treatment 2`, fill = FMet_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Metamorphics' treatment 2") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "none")
+
+
+p5<-ggplot(FMet_phyl_degree, aes(x = reorder(FMet_phyl_degree$Taxon, -FMet_phyl_degree$`Treatment 1`),
+                                 y = FMet_phyl_degree$`Treatment 1`, fill = FMet_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Metamorphics' treatment 1") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "none")
+
+
+p6<-ggplot(FMet_phyl_degree, aes(x = reorder(FMet_phyl_degree$Taxon, -FMet_phyl_degree$`Control`),
+                                 y = FMet_phyl_degree$`Control`, fill = FMet_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Metamorphics' control") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "none")
+
+
+# Sub-adults
+p7<-ggplot(FMet_phyl_degree, aes(x = reorder(FAdl_phyl_degree$Taxon, -FAdl_phyl_degree$`Treatment 2`),
+                                 y = FAdl_phyl_degree$`Treatment 2`, fill = FAdl_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Sub-adults' treatment 2") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "none")
+
+
+p8<-ggplot(FMet_phyl_degree, aes(x = reorder(FAdl_phyl_degree$Taxon, -FAdl_phyl_degree$`Treatment 1`),
+                                 y = FAdl_phyl_degree$`Treatment 1`, fill = FAdl_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Sub-adults' treatment 1") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "none")
+
+
+p9<-ggplot(FMet_phyl_degree, aes(x = reorder(FAdl_phyl_degree$Taxon, -FAdl_phyl_degree$`Control`),
+                                 y = FAdl_phyl_degree$`Control`, fill = FAdl_phyl_degree$Taxon)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Sub-adults' control") +
+  xlab("Phylum") + ylab("Degree") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "none")
+
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, ncol = 3)
 
 ##### Centrality log-fold change #####
 
-###### Treatment 1 ######
-log2fc <- -log2((FTad_phyl_degree$Control+1)/(FTad_phyl_degree$`Treatment 1`+1))
-zscore <- (log2fc-mean(log2fc))/sd(log2fc)
-df_degree <- data.frame(
-  Phylum = FTad_phyl_degree$Taxon,
-  log2fc = log2fc,
-  z_score = zscore
-)
-
-library(ggpubr)
-
-ggbarplot(df_degree, x = "Phylum", y = "z_score",
-          fill = "Phylum",
-          color = "white",
-          palette = colors,
-          sort.val = "desc",
-          sort.by.groups = FALSE,
-          x.text.angle = 90,
-          ylab = "z_score",
-          rotate = TRUE,
-          ggtheme = theme_minimal()) +
-  theme(legend.position = "none")
-
-ggbarplot(df_degree, x = "Phylum", y = "log2fc",
-          fill = "Phylum",
-          color = "white",
-          palette = colors,
-          sort.val = "desc",
-          sort.by.groups = FALSE,
-          x.text.angle = 90,
-          ylab = "log2fc",
-          rotate = TRUE,
-          ggtheme = theme_minimal()) +
-  theme(legend.position = "none")
-
-###### Treatment 2 ######
-
-log2fc <- -log2((FTad_phyl_degree$Control+1)/(FTad_phyl_degree$`Treatment 2`+1))
-zscore <- (log2fc-mean(log2fc))/sd(log2fc)
-df_degree <- data.frame(
-  Phylum = FTad_phyl_degree$Taxon,
-  log2fc = log2fc,
-  z_score = zscore
-)
-
-library(ggpubr)
-
-ggbarplot(df_degree, x = "Phylum", y = "z_score",
-          fill = "Phylum",
-          color = "white",
-          palette = colors,
-          sort.val = "desc",
-          sort.by.groups = FALSE,
-          x.text.angle = 90,
-          ylab = "z_score",
-          rotate = TRUE,
-          ggtheme = theme_minimal()) +
-  theme(legend.position = "none")
-
-ggbarplot(df_degree, x = "Phylum", y = "log2fc",
-          fill = "Phylum",
-          color = "white",
-          palette = colors,
-          sort.val = "desc",
-          sort.by.groups = FALSE,
-          x.text.angle = 90,
-          ylab = "log2fc",
-          rotate = TRUE,
-          ggtheme = theme_minimal()) +
-  theme(legend.position = "none")
 
 
 
