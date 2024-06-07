@@ -133,7 +133,7 @@ colors <- sample(viridis(100), length(unq))
 # Abundance tables list
 abs_BTad<-list(BTad_T2, BTad_T1, BTad_Ctr) # Tadpole
 abs_BMet<-list(BMet_T2, BMet_T1, BMet_Ctr) # Metamorphic
-abs_BAdl<-list(BAdl_T2, BAd_T1, BAdl_Ctr) # Adult
+abs_BAdl<-list(BAdl_T2, BAdl_T1, BAdl_Ctr) # Adult
 
 ml_BTad_sp <- v_colored_ml(ml_BTad_sp, tax_bacter, g_tax = "Phylum",
                          p_tax = "Genus", g_colors = colors)
@@ -388,3 +388,4 @@ kable(frog_ml_properties) %>% kable_styling()
 kable(slope_R2(ml_properties(ml_BTad_sp, treatments))) %>% kable_styling()
 kable(slope_R2(ml_properties(ml_BMet_sp, treatments))) %>% kable_styling()
 kable(slope_R2(ml_properties(ml_BAdl_sp, treatments))) %>% kable_styling()
+
