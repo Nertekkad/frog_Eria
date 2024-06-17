@@ -112,6 +112,14 @@ p4 <- plotDysbiosis(df=cloud.results,
 p4
 
 
+library(MicrobiotaProcess)
+library(UpSetR)
+
+upsetda2 <- get_upset(obj=physeq2, factorNames="Treatment")
+upset(upsetda2, sets=unique(as.vector(sample_data(physeq2)$Treatment)), 
+      sets.bar.color = "#56B4E9",
+      order.by = "freq", 
+      empty.intersections = "on")
 
 
 ##### Metamorphic #####
@@ -214,6 +222,15 @@ p4 <- plotDysbiosis(df=cloud.results,
   theme_bw(base_size = 14)
 p4
 
+library(MicrobiotaProcess)
+library(UpSetR)
+
+upsetda2 <- get_upset(obj=physeq2, factorNames="Treatment")
+upset(upsetda2, sets=unique(as.vector(sample_data(physeq2)$Treatment)), 
+      sets.bar.color = "#56B4E9",
+      order.by = "freq", 
+      empty.intersections = "on")
+
 
 ##### Sub-adults #####
 
@@ -313,7 +330,14 @@ p4 <- plotDysbiosis(df=cloud.results,
   theme_bw(base_size = 14)
 p4
 
+library(MicrobiotaProcess)
+library(UpSetR)
 
+upsetda2 <- get_upset(obj=physeq2, factorNames="Treatment")
+upset(upsetda2, sets=unique(as.vector(sample_data(physeq2)$Treatment)), 
+      sets.bar.color = "#56B4E9",
+      order.by = "freq", 
+      empty.intersections = "on")
 
 #### Fungus ####
 
