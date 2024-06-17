@@ -389,3 +389,37 @@ kable(slope_R2(ml_properties(ml_BTad_sp, treatments))) %>% kable_styling()
 kable(slope_R2(ml_properties(ml_BMet_sp, treatments))) %>% kable_styling()
 kable(slope_R2(ml_properties(ml_BAdl_sp, treatments))) %>% kable_styling()
 
+
+#### Communities' similarity analysis ####
+
+library(ggVennDiagram)
+
+# Tadpoles
+
+Treatment2<-which(components(ml_BTad_sp[[1]])$membership == which(components(ml_BTad_sp[[1]])$csize>=5))
+Treatment1<-which(components(ml_BTad_sp[[1]])$membership == which(components(ml_BTad_sp[[2]])$csize>=5))
+Control<-which(components(ml_BTad_sp[[1]])$membership == which(components(ml_BTad_sp[[3]])$csize>=5))
+
+# Venn diagram
+x <- list("Treatment 2" = Treatment2, "Treatment 1" = Treatment1, "Control" = Control)
+ggVennDiagram(x)
+
+# Metamorphic
+
+Treatment2<-which(components(ml_BMet_sp[[1]])$membership == which(components(ml_BMet_sp[[1]])$csize>=5))
+Treatment1<-which(components(ml_BMet_sp[[1]])$membership == which(components(ml_BMet_sp[[2]])$csize>=5))
+Control<-which(components(ml_BMet_sp[[1]])$membership == which(components(ml_BMet_sp[[3]])$csize>=5))
+
+# Venn diagram
+x <- list("Treatment 2" = Treatment2, "Treatment 1" = Treatment1, "Control" = Control)
+ggVennDiagram(x)
+
+# Sub-adults
+
+Treatment2<-which(components(ml_BAdl_sp[[1]])$membership == which(components(ml_BAdl_sp[[1]])$csize>=5))
+Treatment1<-which(components(ml_BAdl_sp[[1]])$membership == which(components(ml_BAdl_sp[[2]])$csize>=5))
+Control<-which(components(ml_BAdl_sp[[1]])$membership == which(components(ml_BAdl_sp[[3]])$csize>=5))
+
+# Venn diagram
+x <- list("Treatment 2" = Treatment2, "Treatment 1" = Treatment1, "Control" = Control)
+ggVennDiagram(x)
