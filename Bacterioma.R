@@ -820,6 +820,17 @@ p1 <- plotDysbiosis(df=dysbiosis_1,
   theme_bw(base_size = 14)
 p1
 
+#AUC
+
+roc_1 <- pROC::roc(as.factor(dysbiosis_1$Treatment),
+                   dysbiosis_1$score ,
+                   #direction= ">",
+                   plot=TRUE,
+                   ci = TRUE,
+                   auc.polygon=TRUE,
+                   max.auc.polygon=TRUE,
+                   print.auc=TRUE)
+
 # Dysbiosis plot measures according to euclidean method
 dysbiosis_2 <- euclideanDistCentroids(physeq2,
                                       dist_mat = dist.mat,
@@ -838,6 +849,16 @@ p2 <- plotDysbiosis(df=dysbiosis_2,
   theme_bw(base_size = 14)
 p2
 
+# AUC
+
+roc_2 <- pROC::roc(as.factor(dysbiosis_2$Treatment),
+                   dysbiosis_2$CentroidDist_score ,
+                   #direction= ">",
+                   plot=TRUE,
+                   ci = TRUE,
+                   auc.polygon=TRUE,
+                   max.auc.polygon=TRUE,
+                   print.auc=TRUE)
 
 # Dysbiosis plot measures according to the Combined alpha-beta diversity based score
 dysbiosis_3 <- combinedShannonJSD(physeq2,
@@ -853,6 +874,17 @@ p3 <- plotDysbiosis(df=dysbiosis_3,
   labs(x="", y="Shannon-JSD\nDysbiosis Score") +
   theme_bw(base_size = 14)
 p3
+
+# AUC
+
+roc_3 <- pROC::roc(as.factor(dysbiosis_3$Treatment),
+                   dysbiosis_3$ShannonJSDScore ,
+                   #direction= ">",
+                   plot=TRUE,
+                   ci = TRUE,
+                   auc.polygon=TRUE,
+                   max.auc.polygon=TRUE,
+                   print.auc=TRUE)
 
 # Test for outliers’ detection that accounts for the wide range of
 # microbiome phenotypes observed in a typical set of healthy individuals
@@ -873,3 +905,151 @@ p4 <- plotDysbiosis(df=cloud.results,
   theme_bw(base_size = 14)
 p4
 
+# AUC
+
+roc_4 <- pROC::roc(as.factor(cloud.results$Treatment),
+                   cloud.results$log2Stats ,
+                   #direction= ">",
+                   plot=TRUE,
+                   ci = TRUE,
+                   auc.polygon=TRUE,
+                   max.auc.polygon=TRUE,
+                   print.auc=TRUE)
+
+
+
+
+
+
+#### Diversity analysis ####
+
+# Shannon diversity
+Div_Shannon <- function(abundancias_ab){
+  abs_rel <- abundancias_ab/sum(abundancias_ab)
+  Shannon <- -sum(abs_rel*log(abs_rel))
+  return(Shannon)
+}
+
+# Simpson dominance
+Dom_Simpson <- function(abundancias_ab){
+  abs_rel <- abundancias_ab/sum(abundancias_ab)
+  Simpson <- sum(abs_rel^2)
+  return(Simpson)
+}
+
+# Pielou evenness
+Eq_Pielou <- function(abundancias_ab){
+  abs_rel <- abundancias_ab/sum(abundancias_ab)
+  Shannon <- -sum(abs_rel*log(abs_rel))
+  Pielou <- Shannon/log(length(abundancias_ab))
+  return(Pielou)
+}
+
+
+# We built a function able to compute different types of diversity measures (Pielou, Shannon and Simpson indices) from a list of models.
+
+ab_tables_div<-function(ab_tables_list, diversity_type){
+  if(diversity_type == "shannon"){
+    div_list<-list()
+    for(j in 1:length(ab_tables_list)){
+      div_table<-c()
+      for(i in 1:ncol(ab_tables_list[[j]])){
+        div_table[i]<-Div_Shannon(ab_tables_list[[j]][, i])
+      }
+      div_list[[j]]<-div_table
+    }
+  } else
+    if(diversity_type == "simpson"){
+      div_list<-list()
+      for(j in 1:length(ab_tables_list)){
+        div_table<-c()
+        for(i in 1:ncol(ab_tables_list[[j]])){
+          div_table[i]<-Dom_Simpson(ab_tables_list[[j]][, i])
+        }
+        div_list[[j]]<-div_table
+      }
+    } else
+      if(diversity_type == "pielou"){
+        div_list<-list()
+        for(j in 1:length(ab_tables_list)){
+          div_table<-c()
+          for(i in 1:ncol(ab_tables_list[[j]])){
+            div_table[i]<-Eq_Pielou(ab_tables_list[[j]][, i])
+          }
+          div_list[[j]]<-div_table
+        }
+      } else
+        if(diversity_type == "ginisimpson"){
+          div_list<-list()
+          for(j in 1:length(ab_tables_list)){
+            div_table<-c()
+            for(i in 1:ncol(ab_tables_list[[j]])){
+              div_table[i]<-1-Dom_Simpson(ab_tables_list[[j]][, i])
+            }
+            div_list[[j]]<-div_table
+          }
+        }
+  return(div_list)
+}
+
+# Tadpoles
+tad_simp<-ab_tables_div(list(t(BTad_Ctr),
+                             t(BTad_T1),
+                             t(BTad_T2)), "ginisimpson")
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(tad_simp[[3]])),
+                rep("Treatment 1", length(tad_simp[[2]])),
+                rep("Control", length(tad_simp[[1]]))),
+  Data = unlist(tad_simp)
+)
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Simpson index for tadpoles"
+)
+
+# Metamorphic
+met_simp<-ab_tables_div(list(t(BMet_Ctr),
+                             t(BMet_T1),
+                             t(BMet_T2)), "ginisimpson")
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(met_simp[[3]])),
+                rep("Treatment 1", length(met_simp[[2]])),
+                rep("Control", length(met_simp[[1]]))),
+  Data = unlist(tad_simp)
+)
+
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Simpson index for tadpoles"
+)
+
+# Sub_adults
+adl_simp<-ab_tables_div(list(t(BAdl_Ctr),
+                             t(BAdl_T1),
+                             t(BAdl_T2)), "ginisimpson")
+
+df_violinplot<-data.frame(
+  Treatment = c(rep("Treatment 2", length(adl_simp[[3]])),
+                rep("Treatment 1", length(adl_simp[[2]])),
+                rep("Control", length(adl_simp[[1]]))),
+  Data = unlist(adl_simp)
+)
+
+
+library(ggstatsplot)
+ggbetweenstats(
+  data  = df_violinplot,
+  x     = Treatment,
+  y     = Data,
+  title = "Simpson index for tadpoles"
+)
