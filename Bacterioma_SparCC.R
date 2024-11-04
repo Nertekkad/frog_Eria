@@ -125,7 +125,7 @@ ml_BMet_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BMet2.RDS")
 ml_BAdl_sp<-readRDS("~/frog_Eria/sparCC_Nets/ml_BAdl2.RDS")
 
 #### Multilayer networks ####
-
+library(viridis)
 unq<-unique(tax_bacter[,"Phylum"])
 unq<-unq[-c(which(unq == "uncultured"), which(is.na(unq)))]
 colors <- sample(viridis(100), length(unq))
